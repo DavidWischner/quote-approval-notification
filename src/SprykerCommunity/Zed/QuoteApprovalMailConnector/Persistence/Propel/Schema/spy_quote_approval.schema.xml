@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<database name="zed" namespace="Orm\Zed\QuoteApproval\Persistence" package="src.Orm.Zed.QuoteApproval.Persistence">
+    <table name="spy_quote_approval">
+        <behavior name="event">
+            <parameter name="spy_quote_approval_create" column="*"/>
+            <parameter name="spy_quote_approval_update" column="*"/>
+            <parameter name="spy_quote_approval_delete" column="*"/>
+        </behavior>
+    </table>
+</database>
