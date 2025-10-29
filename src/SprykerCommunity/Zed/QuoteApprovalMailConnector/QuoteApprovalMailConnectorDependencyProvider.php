@@ -1,10 +1,17 @@
-<?php declare(strict_types=1);
+<?php
+
+/**
+ * This file is part of the Spryker Commerce OS.
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
 
 namespace SprykerCommunity\Zed\QuoteApprovalMailConnector;
 
+use SprykerCommunity\Zed\QuoteApprovalMailConnector\Dependency\Facade\QuoteApprovalMailConnectorToMailFacadeBridge;
 use Spryker\Zed\Kernel\AbstractBundleDependencyProvider;
 use Spryker\Zed\Kernel\Container;
-use Spryker\Zed\Mail\Business\MailFacadeInterface;
 
 class QuoteApprovalMailConnectorDependencyProvider extends AbstractBundleDependencyProvider
 {
@@ -14,14 +21,28 @@ class QuoteApprovalMailConnectorDependencyProvider extends AbstractBundleDepende
     public const FACADE_MAIL = 'FACADE_MAIL';
 
     /**
-     * @inheritDoc
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Kernel\Container
      */
     public function provideBusinessLayerDependencies(Container $container): Container
     {
-        $container = parent::provideBusinessLayerDependencies($container);
+        $container = $this->addMailFacade($container);
 
-        $container->set(static::FACADE_MAIL, static function (Container $container): MailFacadeInterface {
-            return $container->getLocator()->mail()->facade();
+        return $container;
+    }
+
+    /**
+     * @param \Spryker\Zed\Kernel\Container $container
+     *
+     * @return \Spryker\Zed\Kernel\Container
+     */
+    protected function addMailFacade(Container $container): Container
+    {
+        $container->set(static::FACADE_MAIL, function (Container $container) {
+            return new QuoteApprovalMailConnectorToMailFacadeBridge(
+                $container->getLocator()->mail()->facade()
+            );
         });
 
         return $container;

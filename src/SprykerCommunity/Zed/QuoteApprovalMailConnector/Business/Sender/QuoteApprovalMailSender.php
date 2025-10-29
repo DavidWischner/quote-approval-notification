@@ -1,8 +1,15 @@
-<?php declare(strict_types=1);
+<?php
+
+/**
+ * This file is part of the Spryker Commerce OS.
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
 
 namespace SprykerCommunity\Zed\QuoteApprovalMailConnector\Business\Sender;
 
-use Spryker\Zed\Mail\Business\MailFacadeInterface;
+use SprykerCommunity\Zed\QuoteApprovalMailConnector\Dependency\Facade\QuoteApprovalMailConnectorToMailFacadeInterface;
 use SprykerCommunity\Zed\QuoteApprovalMailConnector\QuoteApprovalMailConnectorConfig;
 
 /**
@@ -11,8 +18,14 @@ use SprykerCommunity\Zed\QuoteApprovalMailConnector\QuoteApprovalMailConnectorCo
  */
 class QuoteApprovalMailSender implements QuoteApprovalMailSenderInterface
 {
-    public function __construct(protected MailFacadeInterface $mailFacade, protected QuoteApprovalMailConnectorConfig $config)
-    {
+    /**
+     * @param \SprykerCommunity\Zed\QuoteApprovalMailConnector\QuoteApprovalMailConnectorConfig $config
+     * @param \SprykerCommunity\Zed\QuoteApprovalMailConnector\Dependency\Facade\QuoteApprovalMailConnectorToMailFacadeInterface $mailFacade
+     */
+    public function __construct(
+        protected QuoteApprovalMailConnectorConfig $config,
+        protected QuoteApprovalMailConnectorToMailFacadeInterface $mailFacade,
+    ) {
     }
 
     /**

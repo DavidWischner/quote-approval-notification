@@ -1,11 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+/**
+ * This file is part of the Spryker Commerce OS.
+ * For full license information, please view the LICENSE file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
 
 namespace SprykerCommunity\Zed\QuoteApprovalMailConnector\Business;
 
 use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
-use Spryker\Zed\Mail\Business\MailFacadeInterface;
 use SprykerCommunity\Zed\QuoteApprovalMailConnector\Business\Sender\QuoteApprovalMailSender;
 use SprykerCommunity\Zed\QuoteApprovalMailConnector\Business\Sender\QuoteApprovalMailSenderInterface;
+use SprykerCommunity\Zed\QuoteApprovalMailConnector\Dependency\Facade\QuoteApprovalMailConnectorToMailFacadeInterface;
 use SprykerCommunity\Zed\QuoteApprovalMailConnector\QuoteApprovalMailConnectorDependencyProvider;
 
 /**
@@ -18,13 +25,16 @@ class QuoteApprovalMailConnectorBusinessFactory extends AbstractBusinessFactory
      */
     public function createQuoteApprovalMailSender(): QuoteApprovalMailSenderInterface
     {
-        return new QuoteApprovalMailSender($this->getMailFacade(), $this->getConfig());
+        return new QuoteApprovalMailSender(
+            $this->getConfig(),
+            $this->getMailFacade()
+        );
     }
 
     /**
-     * @return \Spryker\Zed\Mail\Business\MailFacadeInterface
+     * @return \SprykerCommunity\Zed\QuoteApprovalMailConnector\Dependency\Facade\QuoteApprovalMailConnectorToMailFacadeInterface
      */
-    public function getMailFacade(): MailFacadeInterface
+    public function getMailFacade(): QuoteApprovalMailConnectorToMailFacadeInterface
     {
         return $this->getProvidedDependency(QuoteApprovalMailConnectorDependencyProvider::FACADE_MAIL);
     }
