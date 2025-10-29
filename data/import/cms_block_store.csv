@@ -1,0 +1,17 @@
+block_key,store_name
+cms-block-email--quote-approval-approved-mail--html,DE
+cms-block-email--quote-approval-approved-mail--text,DE
+cms-block-email--quote-approval-cancelled-mail--html,DE
+cms-block-email--quote-approval-cancelled-mail--text,DE
+cms-block-email--quote-approval-declined-mail--html,DE
+cms-block-email--quote-approval-declined-mail--text,DE
+cms-block-email--quote-approval-requested-mail--html,DE
+cms-block-email--quote-approval-requested-mail--text,DE
+cms-block-email--quote-approval-approved-mail--html,US
+cms-block-email--quote-approval-approved-mail--text,US
+cms-block-email--quote-approval-cancelled-mail--html,US
+cms-block-email--quote-approval-cancelled-mail--text,US
+cms-block-email--quote-approval-declined-mail--html,US
+cms-block-email--quote-approval-declined-mail--text,US
+cms-block-email--quote-approval-requested-mail--html,US
+cms-block-email--quote-approval-requested-mail--text,US

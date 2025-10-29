@@ -1,5 +1,5 @@
 {
-    "name": "spryker-community/quote-approval-mail-connector",
+    "name": "spryker-community/quote-approval-notification",
     "description": "Sends emails when spy_quote_approval rows are created/updated",
     "type": "library",
     "require": {
@@ -9,11 +9,40 @@
         "spryker/locale": "^3.0.0 || ^4.0.0",
         "spryker/mail": "^4.6.0",
         "spryker/mail-extension": "^1.0.0",
-        "spryker/transfer": "^3.27.0"
+        "spryker/transfer": "^3.27.0",
+        "spryker/quote": "^2.0.0",
+        "spryker/quote-approval": "^1.2.0",
+        "spryker/glossary-storage": "^1.0.0",
+        "spryker/customer": "^7.11.0",
+        "spryker/company-user": "^2.10.0",
+        "spryker/cms-block": "^3.4.0"
+    },
+    "require-dev": {
+        "spryker/code-sniffer": "*",
+        "spryker/container": "*",
+        "spryker/testify": "*"
     },
     "autoload": {
         "psr-4": {
             "SprykerCommunity\\": "src/SprykerCommunity/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SprykerTest\\": "tests/SprykerTest/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }

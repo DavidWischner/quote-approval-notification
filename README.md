@@ -1,102 +1,39 @@
-# TODO:
-## composer.json:
-- add required modules
-## Readme.md:
-- update installation instructions
-- cleanup instructions
-## Code
-- Mailversand ergänzen
+# QuoteApprovalNotifications Module
+[![Latest Stable Version](https://poser.pugx.org/spryker-community/quote-approval-notifications/v/stable.svg)](https://packagist.org/packages/spryker-community/quote-approval-notifications)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%208.2-8892BF.svg)](https://php.net/)
 
+Provides quote approval notification functionality.
 
+## Documentation
 
-# SprykerCommunity Dummy Module Integration Guide
+### Prerequisites
 
-This README provides step-by-step instructions to integrate the SprykerCommunity Dummy Module into your Spryker B2B Demo Shop.
+Install the required features:
 
-## Prerequisites
+| NAME | VERSION | INSTALLATION GUIDE |
+|---|---|---|
+| Spryker Core | 202507.0 | [Install the Spryker Core feature](/docs/pbc/all/miscellaneous/latest/install-and-upgrade/install-features/install-the-spryker-core-feature.html) |
 
-1. Spryker B2B Demo Shop installed and running
-2. Git access to clone the dummy module
-3. Composer installed
+### 1) Install the required modules
 
-## Workflow
-
-### Set up a place for packagable modules to work on
-
-1. Create local-packages Directory
-
-Create a local-packages directory in your demo shop root:
+Install the required modules using Composer:
 
 ```bash
-mkdir local-packages
-cd local-packages
+composer require spryker-community/quote-approval-notifications:^1.0.0
 ```
 
-2. Adjust .gitignore of demo-shop
+{% info_block warningBox "Verification" %}
 
-Add the module directory to your main project's .gitignore file to prevent tracking the module as part of the main project:
+Make sure that the following modules have been installed:
 
-```
-# Add to .gitignore
-/local-packages/
-```
+| MODULE                     | EXPECTED DIRECTORY                             |
+|----------------------------|------------------------------------------------|
+| QuoteApprovalNotifications | spryker-community/quote-approval-notifications |
+| ...                        | ...                                            |
 
-### Install the Dummy Module
+{% endinfo_block %}
 
-1. Clone Dummy Module
-
-Clone the dummy module repository into the module directory:
-
-```bash
-git clone git@github.com:spryker-community/dummy-module.git dummy-module
-```
-
-Your directory structure should now look like:
-
-```text
-b2b-demo-shop/
-├── local-packages/
-│   └── dummy-module/
-│       ├── assets/
-│       │   ├── Zed/
-│       │   │   └── package.json
-│       │   └── package.json
-│       └── src/
-│           └── SprykerCommunity/
-│               └── Zed/
-│                   └── DummyModule/
-├── src/
-├── vendor/
-└── composer.json
-```
-
-2. Update Main Project composer.json
-
-Add the path repository configuration to your main project's composer.json:
-
-```json
-{
-    "repositories": [
-        {
-            "type": "path",
-            "url": "local-packages/dummy-module",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
-}
-```
-
-3. Install the Module
-
-Run the composer require command from your demo shop root directory:
-
-```bash
-composer require spryker-community/quote-approval-mail-connector:@dev
-```
-
-### Make your project aware of Spryker Community
+### 2) Make your project aware of Spryker Community (if not done already)
 
 #### Sprykers Autoloading (PHP-side)
 
@@ -127,31 +64,94 @@ If needed, clear the Spryker cache:
 vendor/bin/console cache:empty-all
 ```
 
-#### Node Modules
+### 3) Set up transfer objects
 
-1. Add the `spryker-community` workspace to the root `package.json` of your project:
+Generate transfers:
 
-```
-"workspaces": [
-   "vendor/spryker/*",
-   "vendor/spryker-community/*",
-   "vendor/spryker-community/*/assets/",
-   "vendor/spryker/*/assets/Zed",
-   "vendor/spryker-community/*/assets/Zed"
-],
-```
-
-2. Install all JavaScript dependencies from the `/vendor/spryker-community` directory and compile them for use in your application:
-
-Note: Execute inside your `docker/sdk cli`
 ```bash
-npm install
+console transfer:generate
 ```
 
-With `ls -la node_modules` you should see that we installed the node modules `dummy-package-tsl` and `hello-world-npm`.
+### 4) Set up database changes
 
+Generate transfers:
+
+```bash
+console propel:install
+```
+
+### 5) Configure module
+
+#### File: `config/Shared/config_default.php`
+```php
+<?php
+use SprykerCommunity\Shared\QuoteApprovalNotification\QuoteApprovalNotificationConstants;
+//...
+
+$config[ApplicationConstants::BASE_URL_YVES]
+// ...
+     = $config[QuoteApprovalNotificationConstants::BASE_URL_YVES] // Add this line
+     = sprintf(
+         'http://%s',
+         $yvesHost,
+    );
+```
+
+#### File: `Pyz/Zed/Event/EventDependencyProvider.php`
+```php
+<?php
+use SprykerCommunity\Zed\QuoteApprovalNotification\Communication\Plugin\Event\QuoteApprovalEventSubscriberPlugin;
+// ...
+    public function getEventSubscriberCollection(): EventSubscriberCollectionInterface
+    {
+        $eventSubscriberCollection = parent::getEventSubscriberCollection();
+        // ...
+        // QuoteApprovalNotification
+        $eventSubscriberCollection->add(new QuoteApprovalEventSubscriberPlugin());
+       // ...
+    }
+```
+#### File: `Pyz/Zed/Mail/MailDependencyProvider.php`
+```php
+<?php
+use SprykerCommunity\Zed\QuoteApprovalNotification\Communication\Plugin\Mail\QuoteApprovalApprovedMailTypeBuilderPlugin;
+use SprykerCommunity\Zed\QuoteApprovalNotification\Communication\Plugin\Mail\QuoteApprovalCancelledMailTypeBuilderPlugin;
+use SprykerCommunity\Zed\QuoteApprovalNotification\Communication\Plugin\Mail\QuoteApprovalDeclinedMailTypeBuilderPlugin;
+use SprykerCommunity\Zed\QuoteApprovalNotification\Communication\Plugin\Mail\QuoteApprovalRequestedMailTypeBuilderPlugin;
+// ...
+    protected function getMailTypeBuilderPlugins(): array
+    {
+        return [
+        // ...
+            # QuoteApprovalNotification
+            new QuoteApprovalRequestedMailTypeBuilderPlugin(),
+            new QuoteApprovalApprovedMailTypeBuilderPlugin(),
+            new QuoteApprovalDeclinedMailTypeBuilderPlugin(),
+            new QuoteApprovalCancelledMailTypeBuilderPlugin(),
+       // ...
+       ];
+    }
+```
+
+### 6) Import necessary data
+
+#### File: `data/import/common/common/cms_block.csv`
+add block-entries from vendor/spryker-community/quote-approval-notification/data/import/cms_block.csv
+#### File: `data/import/common/*/cms_block_store.csv`
+add block-store-entries from vendor/spryker-community/quote-approval-notification/data/import/cms_block_store.csv
+#### Execute imports
+```bash
+console data:import:cms-block
+console data:import:cms-block-store
+```
 
 ### Verification
 
-After successful installation, you should be able to access the test module at:
-http://backoffice.eu.spryker.local/dummy-module
+After successful installation, you should receive e-mails whenever a new quote approval request is made and after the quote approval request has been approved or declined. To adjust the content of these e-mails use the prepared cms-blocks (see: `data/import/common/common/cms_block.csv`)
+Within the cms-blocks you have access to the QuoteApprovalNotificationTransfer. E.g.:
+```
+Approver FirstName: {{ mail.quoteApprovalNotification.requestedApprover.customer.firstName }}
+Buyer-Email: {{ mail.quoteApprovalNotification.buyer.email }}
+CartPageLink: {{ mail.quoteApprovalNotification.link }}
+QuoteApprovalStatus: {{ mail.quoteApprovalNotification.quoteApproval.status }}
+```
